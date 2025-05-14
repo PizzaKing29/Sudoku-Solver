@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Main;
 
 public partial class Form1 : Form
@@ -16,23 +18,63 @@ public partial class Form1 : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
-        // Generate Rows and Columns
-        for (int Row = 0; Row < 9; Row++)
+        int BoxNumber = 1;
+
+        for (int BoxRow = 0; BoxRow < 3; BoxRow++)
         {
-            for (int Col = 0; Col < 9; Col++)
+            for (int BoxCol = 0; BoxCol < 3; BoxCol++)
             {
-                TextBox NumberInput = new TextBox()
+                TableLayoutPanel CurrentBox = Controls.Find($"Box{BoxNumber}", true).FirstOrDefault() as TableLayoutPanel;
+                if (CurrentBox == null) continue;
+
+                CurrentBox.Controls.Clear();
+                CurrentBox.RowCount = 3;
+                CurrentBox.ColumnCount = 3;
+
+                for (int i = 0; i < 3; i++)
                 {
-                    MaxLength = 1,
-                    TextAlign = HorizontalAlignment.Center,
-                    Size = new Size(40, 40),
-                    Name = $"textBox_{Row}_{Col}"
-                };
-                tableLayoutPanel1.Controls.Add(NumberInput, Col, Row);
+                    for (int j = 0; j < 3; j++)
+                    {
+                        int GlobalRow = BoxRow * 3 + i;
+                        int GlobalCol = BoxCol * 3 + j;
+
+                        TextBox NumberInput = new TextBox()
+                        {
+                            MaxLength = 1,
+                            TextAlign = HorizontalAlignment.Center,
+                            Font = new Font("Segoe UI", 18F, FontStyle.Regular),
+                            Size = new Size(40, 40),
+                            AutoSize = false,
+                            Margin = new Padding(0),
+                            Name = $"TextBox_{GlobalRow}_{GlobalCol}_Box{BoxNumber}"
+                        };
+
+                        NumberInput.KeyPress += (s, e) =>
+                        {
+                            e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar); // Allow only numbers
+                        };
+
+                        CurrentBox.Controls.Add(NumberInput, j, i);
+                    }
+                }
+
+                BoxNumber++;
             }
         }
     }
 
+
+    private void SolveButton_Click (object sender, EventArgs e)
+    {
+
+    }
+
+    private void ResetButton_Click (object sender, EventArgs e)
+    {
+        
+    }
+
+/*
     private void SolveButton_Click (object sender, EventArgs e)
     {
         List<int> CurrentNumbers = new List<int>();
@@ -49,8 +91,8 @@ public partial class Form1 : Form
                 }
                 else
                 {
-                    TextBox.Text = "1";
                     CheckRow(TextBoxNumber);
+                    TextBox.Text = "1";
                 }
             }
         }
@@ -93,6 +135,22 @@ public partial class Form1 : Form
             int ColNumber = Convert.ToInt32(TextBoxNumber[1]);
             int CellValue = Convert.ToInt32(Control.Text); // how to fix this
             BoxData.Add(new BoxData { RowNumber = RowNumber, ColNumber = ColNumber, CellValue = CellValue, });
+            var Position = tableLayoutPanel1.GetPositionFromControl(Control);
+            var CellText = Convert.ToInt32(tableLayoutPanel1.GetControlFromPosition(ColNumber, RowNumber).Text);
+
+
+            if (Position.Column == ColNumber && CellValue == CellText)
+            {
+                
+            }
+            else
+            {
+                for (int i = 1; i < 10; i++)
+                {
+                    CellValue = i;
+                }
+            }
         }
-    }  
+    }
+*/
 }
